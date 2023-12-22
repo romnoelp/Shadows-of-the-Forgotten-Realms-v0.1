@@ -26,7 +26,7 @@ namespace romnoelp
 
         public void CallTurn()
         {
-            LeanTween.rotateY(gameObject, DetermineEndRotation(), yAxisRotationFlipTime).setEaseInOutSine();
+            // LeanTween.rotateY(gameObject, DetermineEndRotation(), yAxisRotationFlipTime).setEaseInOutSine();
         }
 
         private float DetermineEndRotation()
