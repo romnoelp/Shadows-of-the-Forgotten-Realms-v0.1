@@ -5,19 +5,24 @@ namespace romnoelp
 {
     public class Dash : MonoBehaviour
     {
-        
-        
-        [Header ("Dashing")]
-        [SerializeField] private TrailRenderer trailRenderer;
-        [SerializeField] private float dashForce = 24f;
-        [SerializeField] private float dashingTime = 0.2f;
-        [SerializeField] private float dashingCooldown = 1f;
-        public bool isFacingRight = true;
-        private bool canDash = true;
-        private bool isDashing;
         private Movement movementScript;
         private Rigidbody2D rb;
-
+        private bool canDash = true;
+        public bool getCanDash 
+        {
+            get { return canDash; }
+            private set { canDash = value; }
+        }
+        private bool isDashing;
+        public bool getIsDashing
+        {
+            get { return isDashing; }
+            private set { isDashing = value; }
+        }
+        [SerializeField] private float dashForce = 24f;
+        [SerializeField] private float dashDuration = .2f;
+        [SerializeField] private float dashCooldown = 1f;
+        [SerializeField] private TrailRenderer trailRenderer;
 
         private void Start() {
             movementScript = GetComponent<Movement>();
@@ -25,29 +30,27 @@ namespace romnoelp
         }
 
         private void Update() {
-            if (Input.GetKey(KeyCode.LeftShift) && canDash)
+            if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
             {
                 StartCoroutine(DashMovement());
             }
         }
 
-        private IEnumerator DashMovement()
+        public IEnumerator DashMovement()
         {
             canDash = false;
             isDashing = true;
             float originalGravity = rb.gravityScale;
             rb.gravityScale = 0f;
-
-            float dashDirection = isFacingRight ? 1f : -1f; // Use isFacingRight to determine the direction
-            rb.velocity = new Vector2(dashDirection * dashForce, 0f);
-
-            yield return new WaitForSeconds(dashingTime);
-
+            rb.velocity = new Vector2((movementScript.getIsFacingRight ? 1 : -1) * dashForce, 0f);
+            trailRenderer.emitting = true;
+            yield return new WaitForSeconds(dashDuration);
+            trailRenderer.emitting = false;
             rb.gravityScale = originalGravity;
             isDashing = false;
-
-            yield return new WaitForSeconds(dashingCooldown);
+            yield return new WaitForSeconds(dashCooldown);
             canDash = true;
+            Debug.Log("Dashed ");
         }
     }   
 }

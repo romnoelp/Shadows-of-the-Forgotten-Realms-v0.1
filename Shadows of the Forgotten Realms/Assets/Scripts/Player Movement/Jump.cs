@@ -78,6 +78,11 @@ namespace romnoelp
             isJumping = false;
         }
 
+        public bool GetIsGrounded()
+        {
+            return IsGrounded();
+        }
+
         private IEnumerator IncreaseFallSpeed()
         {
             while (rb.velocity.y < 0f)

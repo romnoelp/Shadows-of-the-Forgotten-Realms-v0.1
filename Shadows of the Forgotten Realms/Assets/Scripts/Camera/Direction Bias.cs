@@ -16,7 +16,7 @@ namespace romnoelp
 
         private void Awake() {
             player = playerTransform.gameObject.GetComponent<Movement>();
-            isFacingRight = player.isFacingRight;
+            isFacingRight = player.getIsFacingRight;
         }
 
         void Update()

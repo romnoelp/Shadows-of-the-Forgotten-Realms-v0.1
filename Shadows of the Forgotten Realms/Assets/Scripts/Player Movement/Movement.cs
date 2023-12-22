@@ -6,14 +6,25 @@ namespace romnoelp
     [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
     public class Movement : MonoBehaviour
     {
+        private Dash dashScript;
         private Rigidbody2D privateRigidBody2D;
         public Rigidbody2D rb 
         {
             get { return privateRigidBody2D; }
             private set { privateRigidBody2D = value; }
         }
-        private float horizontalMovement;        
-        public bool isFacingRight = true;
+        private float horizontalMovement; 
+        public float horizontal
+        {
+            get {return horizontalMovement; }
+            private set { horizontalMovement = value; }
+        }       
+        private bool isFacingRight = true;
+        public bool getIsFacingRight
+        {
+            get { return isFacingRight; }
+            private set { isFacingRight = value; }
+        }
         private DirectionBias directionBias;
 
         [Header ("Movement")]
@@ -25,12 +36,18 @@ namespace romnoelp
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
+            dashScript = GetComponent<Dash>();
             directionBias = cameraFollowObject.GetComponent<DirectionBias>();
             fallSpeedYDampingThreshold = Manager.instance.fallSpeedYDampingChangeThreshold;
         }
 
         private void Update() 
         {
+            if (dashScript.getIsDashing)
+            {
+                return;
+            }
+
             horizontalMovement = Input.GetAxisRaw("Horizontal");
 
             if (rb.velocity.y < fallSpeedYDampingThreshold && !Manager.instance.isLerpingYDamping && 
@@ -43,11 +60,20 @@ namespace romnoelp
                 Manager.instance.LerpedFromPlayerFalling = false;
                 Manager.instance.LerpYDamping(false);
             }
+            if (Input.GetKeyDown(KeyCode.LeftShift) && dashScript.getCanDash)
+            {
+                StartCoroutine(dashScript.DashMovement());
+            }
         }
 
         // Physics for the movement
         private void FixedUpdate()
         {
+            if (dashScript.getIsDashing)
+            {
+                return;
+            }
+
             rb.velocity = new Vector2(horizontalMovement * movementSpeed, rb.velocity.y);
             FlipCheck();
         }
